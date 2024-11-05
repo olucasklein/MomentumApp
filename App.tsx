@@ -225,11 +225,11 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
   },
   exportButtonContainer: {
-    maxWidth: 150, // Define o máximo de largura aqui
+    width: "40%",
   },
   flatListContainer: {
     marginTop: 20,
-    marginBottom: 80,
+    marginBottom: 60,
   },
   selectedTimeText: {
     fontSize: 16,
