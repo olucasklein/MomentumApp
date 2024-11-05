@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, FlatList, StyleSheet, Alert, Image, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Button, FlatList, StyleSheet, Alert, Image, ScrollView } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Calendar } from 'react-native-calendars';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -13,25 +13,21 @@ const App = () => {
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [selectedTime, setSelectedTime] = useState(new Date());
 
-  const isDuplicateCheckInOrOut = (time, type) => {
-    const todayCheckIns = checkIns[selectedDate] || [];
-    return todayCheckIns.some(entry => entry.time === time && entry.type === type && entry.name === employeeName);
-  };
-
   const handleCheckIn = async () => {
     if (!employeeName || !selectedDate) {
       Alert.alert("Erro", "Por favor, insira o nome do funcionário e selecione uma data.");
       return;
     }
-    
     const formattedTime = selectedTime.toLocaleTimeString();
+    const todayCheckIns = checkIns[selectedDate] || [];
     
-    if (isDuplicateCheckInOrOut(formattedTime, 'check-in')) {
-      Alert.alert("Erro", "Já existe um check-in registrado para este horário.");
+    // Verificar se o check-in/check-out já existe
+    const alreadyCheckedIn = todayCheckIns.some(item => item.time === formattedTime && item.name === employeeName);
+    if (alreadyCheckedIn) {
+      Alert.alert("Erro", "Já existe um registro de check-in/check-out para este horário.");
       return;
     }
 
-    const todayCheckIns = checkIns[selectedDate] || [];
     const newCheckIns = [
       ...todayCheckIns,
       { time: formattedTime, type: 'check-in', name: employeeName }
@@ -46,15 +42,16 @@ const App = () => {
       Alert.alert("Erro", "Por favor, insira o nome do funcionário e selecione uma data.");
       return;
     }
-    
     const formattedTime = selectedTime.toLocaleTimeString();
+    const todayCheckIns = checkIns[selectedDate] || [];
     
-    if (isDuplicateCheckInOrOut(formattedTime, 'check-out')) {
-      Alert.alert("Erro", "Já existe um check-out registrado para este horário.");
+    // Verificar se o check-in/check-out já existe
+    const alreadyCheckedOut = todayCheckIns.some(item => item.time === formattedTime && item.name === employeeName);
+    if (alreadyCheckedOut) {
+      Alert.alert("Erro", "Já existe um registro de check-in/check-out para este horário.");
       return;
     }
 
-    const todayCheckIns = checkIns[selectedDate] || [];
     const newCheckIns = [
       ...todayCheckIns,
       { time: formattedTime, type: 'check-out', name: employeeName }
@@ -118,14 +115,12 @@ const App = () => {
   const renderItem = ({ item, index }) => (
     <View style={styles.entry}>
       <Text>{`${item.name} - ${item.type === 'check-in' ? 'Check-in' : 'Check-out'}: ${item.time}`}</Text>
-      <View style={styles.buttonRemove}>
-        <Button title="Remover" onPress={() => removeEntry(selectedDate, index)} />
-      </View>
+      <Button title="Remover" onPress={() => removeEntry(selectedDate, index)} />
     </View>
   );
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}> {/* ScrollView adicionado aqui */}
       <Image source={require('./assets/logo.png')} style={styles.image} />
       
       <View style={styles.header}>
@@ -162,13 +157,8 @@ const App = () => {
       </Text>
 
       <View style={styles.buttonContainer}>
-        <View style={styles.buttonCheckIn}>
-          <Button title="Check In" onPress={handleCheckIn} />
-        </View>
-        <View style={styles.buttonSpacer} /> {/* Espaço entre os botões */}
-        <View style={styles.buttonCheckOut}>
-          <Button title="Check Out" onPress={handleCheckOut} />
-        </View>
+        <Button title="Check In" onPress={handleCheckIn} />
+        <Button title="Check Out" onPress={handleCheckOut} />
       </View>
 
       {/* FlatList com altura fixa para permitir rolagem */}
@@ -194,7 +184,7 @@ const App = () => {
           }}
         />
       )}
-    </View>
+    </ScrollView>
   );
 };
 
@@ -238,8 +228,8 @@ const styles = StyleSheet.create({
     maxWidth: 150, // Define o máximo de largura aqui
   },
   flatListContainer: {
-    maxHeight: 180, // Define a altura máxima da FlatList
     marginTop: 20,
+    marginBottom: 80,
   },
   selectedTimeText: {
     fontSize: 16,
@@ -255,17 +245,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  buttonSpacer: {
-    width: 20,
-  },
-  buttonCheckIn: {
-    width: "40%", 
-  },
-  buttonCheckOut: {
-    width: "40%",
+    marginVertical: 20,
   },
 });
 
