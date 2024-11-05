@@ -3,6 +3,7 @@ import { View, Text, TextInput, Button, FlatList, StyleSheet, Alert, Image, Scro
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Calendar } from 'react-native-calendars';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import FileViewer from 'react-native-file-viewer';
 import XLSX from 'xlsx';
 import RNFS from 'react-native-fs';
 
@@ -86,28 +87,59 @@ const App = () => {
     }
   };
 
-  const exportDataToExcel = async () => {
-    const workSheet = XLSX.utils.json_to_sheet([]);
+  const exportDataToText = async () => {
+    let textData = 'Data, Nome, Tipo, Horário\n'; // Cabeçalho do arquivo de texto
+  
     for (const date in checkIns) {
       const checkInData = checkIns[date].map(entry => ({
         Date: date,
         Name: entry.name,
-        Type: entry.type,
+        Type: entry.type === 'check-in' ? 'Check-in' : 'Check-out',
         Time: entry.time,
       }));
-      XLSX.utils.sheet_add_json(workSheet, checkInData, { skipHeader: true, origin: -1 });
+  
+      // Adiciona as entradas ao texto
+      checkInData.forEach(entry => {
+        textData += `${entry.Date}, ${entry.Name}, ${entry.Type}, ${entry.Time}\n`;
+      });
     }
-
-    const workBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workBook, workSheet, "CheckIns");
-
-    // Salvar o arquivo Excel
-    const filePath = `${RNFS.DocumentDirectoryPath}/checkins.xlsx`;
-    XLSX.writeFile(workBook, filePath);
-
-    Alert.alert("Exportado!", `Dados exportados para ${filePath}`);
+  
+    // Caminho do arquivo de texto
+    const filePath = `${RNFS.DocumentDirectoryPath}/checkins.txt`;
+  
+    // Salva o arquivo de texto
+    await RNFS.writeFile(filePath, textData, 'utf8')
+      .then(() => {
+        Alert.alert(
+          "Exportado!",
+          `Dados exportados para ${filePath}`,
+          [
+            {
+              text: "Abrir",
+              onPress: () => openFile(filePath),
+            },
+            {
+              text: "Fechar",
+              style: "cancel"
+            }
+          ]
+        );
+      })
+      .catch(error => {
+        console.error('Erro ao salvar o arquivo de texto:', error);
+        Alert.alert("Erro", "Não foi possível salvar o arquivo.");
+      });
   };
-
+  
+  const openFile = async (filePath) => {
+    try {
+      await FileViewer.open(filePath, { showOpenWithDialog: true });
+    } catch (error) {
+      console.error('Erro ao abrir o arquivo:', error);
+      Alert.alert("Erro", "Não foi possível abrir o arquivo.");
+    }
+  };
+  
   useEffect(() => {
     loadData();
   }, []);
@@ -126,7 +158,7 @@ const App = () => {
       <View style={styles.header}>
         <Text style={styles.title}>Bater ponto:</Text>
         <View style={styles.exportButtonContainer}>
-          <Button title="Exportar Dados" onPress={exportDataToExcel} />
+          <Button title="Exportar Dados" onPress={exportDataToText} />
         </View>
       </View>
 
