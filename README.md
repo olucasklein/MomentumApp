@@ -1,7 +1,7 @@
 <h1 align="center"> MomentumApp </h1>
 <p align="center">Projeto/Trabalho de extensão realizado no penúltimo semestre do curso de Sistemas de Informação na faculdade Estácio de Sá.</p>
 
-<h2>🚀 Vídeo de apresentação do app:</h2>
+<h2>🚀 Vídeo de apresentação do app: (clique na imagem)</h2>
 
 [![Apresentação do app](https://raw.githubusercontent.com/olucasklein/MomentumApp/refs/heads/main/momentumapp.png)](https://youtu.be/Hzo9kmAvmqY)
 
