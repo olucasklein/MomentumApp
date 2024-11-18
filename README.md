@@ -2,7 +2,8 @@
 <p align="center">Projeto/Trabalho de extensão realizado no penúltimo semestre do curso de Sistemas de Informação na faculdade Estácio de Sá.</p>
 
 <h2>🚀 Vídeo de apresentação do app:</h2>
-[![Apresentação do app](./momentumapp.png)](https://youtu.be/Hzo9kmAvmqY)
+
+[![Apresentação do app](https://raw.githubusercontent.com/olucasklein/MomentumApp/refs/heads/main/momentumapp.png)](https://youtu.be/Hzo9kmAvmqY)
 
 📖 - Proposta: A implementação de um sistema digital para controle de horários de entrada e saída dos funcionários trará maior precisão e automação aos registros de trabalho, especialmente para setores críticos como vendas, estoque e embalagem. O projeto permite a aplicação prática de conhecimentos de desenvolvimento de software, enquanto contribui para um ambiente de trabalho mais organizado e produtivo no depósito.
 
